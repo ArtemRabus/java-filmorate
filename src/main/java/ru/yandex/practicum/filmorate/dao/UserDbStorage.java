@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -64,10 +65,12 @@ public class UserDbStorage implements UserStorage {
         final String sqlQuery = "select USER_ID, EMAIL, LOGIN, BIRTHDAY, USER_NAME " +
                 "from USERS " +
                 "where USER_ID = ?";
-        List<User> res = jdbcTemplate.query(sqlQuery, this::makeUser, id);
-        return res.size() == 0 ?
-                Optional.empty() :
-                Optional.of(res.get(0));
+        try {
+            return
+                    Optional.of(Objects.requireNonNull(jdbcTemplate.queryForObject(sqlQuery, this::makeUser, id)));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

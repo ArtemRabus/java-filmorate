@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -76,10 +77,11 @@ public class FilmDbStorage implements FilmStorage {
                 "F.RELEASE_DATE, M.MPA_ID, M.MPA_NAME from FILMS F " +
                 "join MPA M on M.MPA_ID = F.MPA_ID " +
                 "where F.FILM_ID = ?";
-        List<Film> res = jdbcTemplate.query(sqlQuery, this::makeFilm, id);
-        return res.size() == 0 ?
-                Optional.empty() :
-                Optional.of(res.get(0));
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id));
+        } catch (EmptyResultDataAccessException e)  {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -93,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
                     Optional.empty() :
                     Optional.of(film);
         } catch (Exception ex) {
-            throw new NotFoundException("Данные неккоректны");
+            throw new NotFoundException("The data is incorrect");
         }
     }
 

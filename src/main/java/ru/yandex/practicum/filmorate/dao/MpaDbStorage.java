@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -7,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -30,9 +30,11 @@ public class MpaDbStorage {
 
     public Optional<Mpa> getMpaById(long id) {
         final String sqlQuery = "select * from MPA where MPA_ID = ?";
-        List<Mpa> result = jdbcTemplate.query(sqlQuery, this::makeMpa, id);
-        return result.size() == 0 ?
-                Optional.empty() :
-                Optional.of(result.get(0));
+        try {
+            return
+                    Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::makeMpa, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

@@ -25,13 +25,13 @@ public class GenreController {
 
     @GetMapping
     public Collection<Genre> getAllGenre() {
-        log.info("Получить все жанры");
+        log.info("Get all genres");
         return genreService.getAllGenres();
     }
 
     @GetMapping("/{id}")
     public Genre getGenreById(@PathVariable long id) throws SQLException {
-        log.info("Получить жанр по id");
+        log.info("Get genre by id");
         return genreService.getGenreById(id);
     }
 }

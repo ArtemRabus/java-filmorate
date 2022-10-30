@@ -26,6 +26,6 @@ public class GenreService {
         if (resGenre.isPresent()) {
             return resGenre.get();
         }
-        throw new NotFoundException(String.format("Жанр с id = %s не найден.", id));
+        throw new NotFoundException(String.format("Genre with id = %s is not found", id));
     }
 }

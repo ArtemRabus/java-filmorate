@@ -23,6 +23,6 @@ public class MpaService {
         if (res.isPresent()) {
             return res.get();
         }
-        throw new NotFoundException(String.format("Рейтинг с id = %s не найден.", id));
+        throw new NotFoundException(String.format("Mpa with id = %s is not found", id));
     }
 }

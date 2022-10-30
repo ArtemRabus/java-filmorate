@@ -25,32 +25,32 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> getFilms() {
-        log.info("Получить список всех фильмов");
+        log.info("Get a list of all films");
         return filmService.getAll();
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable long id) throws SQLException {
-        log.info("Получить фильм по id");
+        log.info("Get a film by id");
         return filmService.getById(id);
     }
 
     @PostMapping
     public Film createFilm(@RequestBody Film film) throws ValidationException {
-        log.info("Создать фильм");
+        log.info("Create a film");
         return filmService.create(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) throws ValidationException, SQLException {
-        log.info("Обновить фильм");
+        log.info("Update the film");
         return filmService.update(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public ResponseEntity<HttpStatus> addLike(@PathVariable("id") long filmId,
                                               @PathVariable long userId) {
-        log.info("Добавить лайк");
+        log.info("Add a like");
         filmService.addLike(filmId, userId);
         return ResponseEntity.ok().build();
     }
@@ -58,14 +58,14 @@ public class FilmController {
     @DeleteMapping("/{id}/like/{userId}")
     public ResponseEntity<HttpStatus> deleteLike(@PathVariable("id") long filmId,
                                                  @PathVariable long userId) throws SQLException {
-        log.info("Удалить лайк");
+        log.info("Delete a like");
         filmService.deleteLike(filmId, userId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/popular")
     public Collection<Film> getListPopularFilm(@RequestParam(defaultValue = "10") int count) {
-        log.info("Получить список популярных фильмов");
+        log.info("Get a list of popular films");
         return filmService.getListPopularFilm(count);
     }
 }

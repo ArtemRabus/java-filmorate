@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -28,10 +29,12 @@ public class GenreDbStorage {
 
     public Optional<Genre> getGenreById(long id) throws SQLException {
         final String sqlQuery = "select * from GENRES where GENRE_ID = ?";
-        List<Genre> res = jdbcTemplate.query(sqlQuery, this::makeGenre, id);
-        return res.size() == 0 ?
-                Optional.empty() :
-                Optional.of(res.get(0));
+        try {
+            return
+                    Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::makeGenre, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public void setFilmGenre(Film film) {

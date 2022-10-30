@@ -25,38 +25,38 @@ public class UserController {
 
     @GetMapping
     public Collection<User> getUsers() {
-        log.info("Получить пользователей");
+        log.info("Get users");
         return userService.getAll();
     }
 
     @PostMapping
     public User createUser(@RequestBody User user) throws ValidationException {
-        log.info("Создать пользователя");
+        log.info("Create a user");
         return userService.create(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) throws ValidationException, SQLException {
-        log.info("Обновить пользователя");
+        log.info("Update the user");
         return userService.update(user);
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable("id") long userId) throws SQLException {
-        log.info("Получить пользователя по id");
+        log.info("Get a user by id");
         return userService.getById(userId);
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getListFriends(@PathVariable("id") long userId) throws SQLException {
-        log.info("Получить список друзей пользователя с id={}", userId);
+        log.info("Get a list of friends of a user with an id={}", userId);
         return userService.getListFriends(userId);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public ResponseEntity<HttpStatus> addInFriends(@PathVariable("id") long userId,
                                                    @PathVariable("friendId") long friendId) throws SQLException {
-        log.info("Добавить пользователя в друзья");
+        log.info("Add a user as a friend");
         userService.addInFriend(userId, friendId);
         return ResponseEntity.ok().build();
     }
@@ -64,15 +64,15 @@ public class UserController {
     @DeleteMapping("/{id}/friends/{friendId}")
     public ResponseEntity<HttpStatus> deleteFromFriends(@PathVariable("id") long userId,
                                   @PathVariable("friendId") long friendId) throws SQLException {
-        log.info("Удалить пользователя с друзей");
+        log.info("Delete a user from friends");
         userService.deleteFromFriends(userId, friendId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("{id}/friends/common/{otherId}")
-    public List<User> getListCommonFriends(@PathVariable("id") long userId,
+    public List<User> getListMutualFriends(@PathVariable("id") long userId,
                                            @PathVariable("otherId") long otherId) throws SQLException {
-        log.info("Получить список общих друзей");
+        log.info("Get a list of mutual friends");
         return userService.getListCommonFriends(userId, otherId);
     }
 }

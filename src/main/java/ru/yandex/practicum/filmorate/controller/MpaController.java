@@ -25,13 +25,13 @@ public class MpaController {
 
     @GetMapping
     public Collection<Mpa> getMpa() {
-        log.info("Получить все рейтинги");
+        log.info("Get all mpa");
         return mpaService.getMpa();
     }
 
     @GetMapping("/{id}")
     public Mpa getMpaById(@PathVariable long id) {
-        log.info("Получить рейтинг по id");
+        log.info("Get mpa by id");
         return mpaService.getMpaById(id);
     }
 }

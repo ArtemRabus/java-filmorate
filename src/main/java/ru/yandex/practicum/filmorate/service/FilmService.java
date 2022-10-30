@@ -9,14 +9,13 @@ import ru.yandex.practicum.filmorate.dao.LikeDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -36,11 +35,7 @@ public class FilmService implements MainService<Film> {
 
     public Collection<Film> getAll() {
         List<Film> films = filmDbStorage.getAll();
-        for (Film film : films) {
-            Set<Genre> genre = genreDbStorage.loadFilmGenre(film);
-            film.setGenres(genre);
-        }
-        return films;
+        return addFilmsGenresForList(films);
     }
 
     public Film getById(long filmId) throws SQLException {
@@ -50,7 +45,7 @@ public class FilmService implements MainService<Film> {
             film.setGenres(genreDbStorage.loadFilmGenre(film));
             return film;
         }
-        throw new NotFoundException(String.format("Фильм с id = %s не найден.", filmId));
+        throw new NotFoundException(String.format("Film with id = %s is not found", filmId));
     }
 
     public Film update(Film film) throws ValidationException, SQLException {
@@ -60,50 +55,52 @@ public class FilmService implements MainService<Film> {
             genreDbStorage.setFilmGenre(res.get());
             return res.get();
         }
-        throw new NotFoundException(String.format("Фильм с id = %s не найден.", film.getId()));
+        throw new NotFoundException(String.format("Film with id = %s is not found", film.getId()));
     }
 
     public void addLike(long filmId, long userId) {
         if (!likeDbStorage.addLike(filmId, userId)) {
-            throw new NotFoundException("Ошибка при добавлении лайка.");
+            throw new NotFoundException("Error when adding a like");
         }
     }
 
     public void deleteLike(long filmId, long userId) throws SQLException {
         if (!likeDbStorage.deleteLike(filmId, userId)) {
-            throw new NotFoundException("Ошибка при удалении лайка.");
+            throw new NotFoundException("Error when deleting a like");
         }
     }
 
     public List<Film> getListPopularFilm(long count) {
         List<Film> films =  filmDbStorage.getListPopularFilm(count);
-        for (Film film : films) {
-            Set<Genre> genre = genreDbStorage.loadFilmGenre(film);
-            film.setGenres(genre);
-        }
-        return films;
+        return addFilmsGenresForList(films);
+    }
+
+    private List<Film> addFilmsGenresForList(List<Film> films) {
+        return films.stream()
+                .peek(film -> film.setGenres(genreDbStorage.loadFilmGenre(film)))
+                .collect(Collectors.toList());
     }
 
     public void validate(Film film) throws ValidationException {
         if (film.getId() < 0) {
-            log.debug("id отрицателен");
-            throw new ValidationException("Id не может быть отрицательным.");
+            log.debug("negative id");
+            throw new ValidationException("Id cannot be negative");
         }
         if (film.getName() == null || film.getName().isBlank()) {
-            log.debug("Пустое название");
-            throw new ValidationException("Название не может быть пустым");
+            log.debug("blank name");
+            throw new ValidationException("The name cannot be blank");
         }
         if (film.getDescription().length() > 200) {
-            log.debug("Описание больше 200 символов");
-            throw new ValidationException("Максимальная длина описания — 200 символов");
+            log.debug("Description more than 200 characters");
+            throw new ValidationException("The maximum length of the description is 200 characters");
         }
         if (film.getReleaseDate().isBefore(REFERENCE_DATE)) {
-            log.debug("Дата релиза раньше 28 декабря 1895 года");
-            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
+            log.debug("Release date earlier than December 28, 1895");
+            throw new ValidationException("The release date should not be earlier than December 28, 1895");
         }
         if (film.getDuration() < 0) {
-            log.debug("Отрицательная продолжительность фильма");
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
+            log.debug("Negative duration of the film");
+            throw new ValidationException("The duration of the film should be positive");
         }
     }
 }
