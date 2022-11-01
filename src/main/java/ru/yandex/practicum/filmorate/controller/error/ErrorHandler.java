@@ -16,20 +16,20 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(final ValidationException e) {
         log.info("400: {}", e.getMessage());
-        return new ErrorResponse(String.format("Ошибка с полем \"%s\".", e.getMessage()));
+        return new ErrorResponse(String.format("Error with the field \"%s\".", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
         log.info("404: {}", e.getMessage());
-        return new ErrorResponse(String.format("Ошибка с полем \"%s\".", e.getMessage()));
+        return new ErrorResponse(String.format("Error with the field \"%s\".", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerErrorException(final Exception e) {
         log.info("500: {}", e.getMessage());
-        return new ErrorResponse(String.format("Ошибка с полем \"%s\".", e.getMessage()));
+        return new ErrorResponse(String.format("Error with the field \"%s\".", e.getMessage()));
     }
 }

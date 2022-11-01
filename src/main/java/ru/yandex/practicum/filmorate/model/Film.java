@@ -1,17 +1,21 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Film {
     private long id;
 
@@ -25,13 +29,9 @@ public class Film {
     private LocalDate releaseDate;
 
     @Min(1)
-    private long duration;
+    private int duration;
 
-    @JsonIgnore
-    private Set<User> like = new HashSet<>();
+    private Mpa mpa;
 
-    @Override
-    public int hashCode() {
-        return (int) (id ^ (id >>> 32));
-    }
+    private Set<Genre> genres;
 }
